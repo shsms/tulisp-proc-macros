@@ -13,7 +13,7 @@ fn gen_function_call(
     ret_type: &ReturnType,
 ) -> Result<TokenStream2, TokenStream> {
     let ret_type_err = |tt: &Box<syn::Type>| {
-        const ALLOWED_TYPES: &str = "i64, f64, String, Rc<dyn Any>, TulispValue";
+        const ALLOWED_TYPES: &str = "i64, f64, String, Rc<dyn Any>, TulispObject";
         Err(syn::Error::new(
             tt.__span(),
             format!(
@@ -35,14 +35,14 @@ fn gen_function_call(
 
     let call_and_ret = match ret_type {
         syn::ReturnType::Default => {
-            quote! {#self_prefix #fn_name(#params_for_call); Ok(TulispValue::nil())}
+            quote! {#self_prefix #fn_name(#params_for_call); Ok(TulispObject::nil())}
         }
         syn::ReturnType::Type(_, tt) => match &**tt {
             syn::Type::Path(tp) => {
                 let seg = tp.path.segments.last().unwrap();
                 let ret_str = seg.ident.to_string();
                 match ret_str.as_str() {
-                    "i64" | "f64" | "bool" | "String" | "TulispValue" => {
+                    "i64" | "f64" | "bool" | "String" | "TulispObject" => {
                         quote! {Ok(#self_prefix #fn_name(#params_for_call).into())}
                     }
                     "Result" => match &seg.arguments {
@@ -56,7 +56,7 @@ fn gen_function_call(
                             let inner_str =
                                 agbkt.args.first().unwrap().to_token_stream().to_string();
                             match inner_str.as_str() {
-                                "i64" | "f64" | "bool" | "String" | "TulispValue"
+                                "i64" | "f64" | "bool" | "String" | "TulispObject"
                                 | "Rc < dyn Any >" => {
                                     quote! {#self_prefix #fn_name(#params_for_call).map(|x| x.into())}
                                 }
@@ -168,8 +168,8 @@ fn tulisp_fn_impl(
         fn #generated_fn_name(
             #self_param
             ctx: &mut #crate_name::TulispContext,
-            __tulisp_internal_value: &#crate_name::TulispValue,
-        ) -> Result<#crate_name::TulispValue, #crate_name::Error> {
+            __tulisp_internal_value: &#crate_name::TulispObject,
+        ) -> Result<#crate_name::TulispObject, #crate_name::Error> {
             use #crate_name::Error;
 
 

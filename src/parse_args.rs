@@ -68,7 +68,8 @@ impl ArgInfo {
     }
 
     fn is_rest(&mut self) -> bool {
-        if self.name.to_string() == "rest" && self.ty.to_token_stream().to_string() == "TulispValue"
+        if self.name.to_string() == "rest"
+            && self.ty.to_token_stream().to_string() == "TulispObject"
         {
             self.rest = true;
         }
@@ -144,7 +145,7 @@ fn process_arg(
     };
 
     if has_rest {
-        tulisp_compile_error!(fn_name, "`rest: TulispValue` has to be the last argument");
+        tulisp_compile_error!(fn_name, "`rest: TulispObject` has to be the last argument");
     }
     let mut arg_info = ArgInfo {
         pos,
@@ -166,12 +167,12 @@ fn process_arg(
         if eval_args {
             arg_info.extract_stmts.extend(quote! {
                 let #arg_name = ctx.eval_each(&__tulisp_internal_value)?;
-                let __tulisp_internal_value = TulispValue::nil();
+                let __tulisp_internal_value = TulispObject::nil();
             })
         } else {
             arg_info.extract_stmts.extend(quote! {
                 let #arg_name = __tulisp_internal_value;
-                let __tulisp_internal_value = TulispValue::nil();
+                let __tulisp_internal_value = TulispObject::nil();
             })
         }
         return Ok(Some(arg_info));
@@ -189,7 +190,7 @@ fn process_arg(
     let ty_extractor = if arg_info.is_iter()? {
         if optional {
             quote! {(
-                |x: #crate_name::TulispValue| {
+                |x: #crate_name::TulispObject| {
                     if x.null() {
                         Ok(None)
                     } else if !x.consp() {
@@ -208,7 +209,7 @@ fn process_arg(
             }
         } else {
             quote! {(
-                |x: #crate_name::TulispValue| {
+                |x: #crate_name::TulispObject| {
                     if !x.consp() {
                         Err(#crate_name::Error::new(
                             #crate_name::ErrorKind::TypeMismatch,
@@ -228,16 +229,16 @@ fn process_arg(
         match arg_info.val_ty.to_token_stream().to_string().as_str() {
             "i64" | "f64" | "String" | "bool" | "Rc < dyn Any >" => {
                 if optional {
-                    quote! {(|x: #crate_name::TulispValue|if x.null() { Ok(None)} else {Ok(Some(x.try_into()?))})}
+                    quote! {(|x: #crate_name::TulispObject|if x.null() { Ok(None)} else {Ok(Some(x.try_into()?))})}
                 } else {
-                    quote! {(|x: #crate_name::TulispValue| x.try_into())}
+                    quote! {(|x: #crate_name::TulispObject| x.try_into())}
                 }
             }
-            "TulispValue" => {
+            "TulispObject" => {
                 if optional {
-                    quote! {(|x: #crate_name::TulispValue|if x.null() { Ok(None)} else {Ok(x.into())})}
+                    quote! {(|x: #crate_name::TulispObject|if x.null() { Ok(None)} else {Ok(x.into())})}
                 } else {
-                    quote! {(|x: #crate_name::TulispValue| Ok(x.into()))}
+                    quote! {(|x: #crate_name::TulispObject| Ok(x.into()))}
                 }
             }
             _ => {
