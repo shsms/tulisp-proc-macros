@@ -194,7 +194,7 @@ fn tulisp_fn_impl(
         generated.extend(quote! {
             let tfunc = #ctx.intern(#tulisp_fn_name);
             tfunc.set_scope(
-                #crate_name::TulispValueEnum::#ctxobj_type(std::rc::Rc::new(#generated_fn_name))
+                #crate_name::TulispValue::#ctxobj_type(std::rc::Rc::new(#generated_fn_name))
                 .into_ref()
             ).unwrap();
         })
@@ -263,7 +263,7 @@ fn tulisp_add_impl(input: TokenStream, crate_name: TokenStream2, add_macro: bool
     let generated = quote! {
         let tfunc = #ctx.intern(#tulisp_fn_name);
         tfunc.set_scope(
-            #crate_name::TulispValueEnum::#ctxobj_type(
+            #crate_name::TulispValue::#ctxobj_type(
                 std::rc::Rc::new(move |_1, _2|#generated_fn_name(_1, _2))
             ).into_ref()
         ).unwrap();
