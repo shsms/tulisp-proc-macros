@@ -272,21 +272,53 @@ fn tulisp_add_impl(input: TokenStream, crate_name: TokenStream2, add_macro: bool
     generated.into()
 }
 
+/// Adds a function to the context.
+///
+/// The function must be marked with `#[tulisp_fn]` or `#[tulisp_fn_no_eval]`.
+///
+/// Arguments:
+/// - `ctx`: The context to add the function to.
+/// - `fn`: The function to add.
+/// - `fn_name`: Optional name of the function in the context.
 #[proc_macro]
 pub fn tulisp_add_func(input: TokenStream) -> TokenStream {
     tulisp_add_impl(input, quote!(tulisp), false)
 }
 
+/// Adds a function as a defmacro to the context.
+///
+/// The function must be marked with `#[tulisp_fn]` or `#[tulisp_fn_no_eval]`.
+///
+/// Arguments:
+/// - `ctx`: The context to add the function to.
+/// - `fn`: The function to add.
+/// - `fn_name`: Optional name of the function in the context.
 #[proc_macro]
 pub fn tulisp_add_macro(input: TokenStream) -> TokenStream {
     tulisp_add_impl(input, quote!(tulisp), true)
 }
 
+/// Adds a function to the context.
+///
+/// The function must be marked with `#[tulisp_fn]` or `#[tulisp_fn_no_eval]`.
+///
+/// Arguments:
+/// - `ctx`: The context to add the function to.
+/// - `fn`: The function to add.
+/// - `fn_name`: Optional name of the function in the context.
 #[proc_macro]
 pub fn crate_add_func(input: TokenStream) -> TokenStream {
     tulisp_add_impl(input, quote!(crate), false)
 }
 
+/// Adds a function as a defmacro to the context.
+///
+/// The function must be marked with `#[tulisp_fn]` or `#[tulisp_fn_no_eval]`.
+///
+/// Arguments:
+/// - `ctx`: The context to add the function to.
+/// - `fn`: The function to add.
+/// - `fn_name`: Optional name of the function in the context.
 #[proc_macro]
 pub fn crate_add_macro(input: TokenStream) -> TokenStream {
     tulisp_add_impl(input, quote!(crate), true)
