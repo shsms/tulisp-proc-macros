@@ -172,9 +172,7 @@ fn tulisp_fn_impl(
         ) -> Result<#crate_name::TulispObject, #crate_name::Error> {
             use #crate_name::Error;
 
-
-            let __defun_name = __tulisp_internal_value.car()?;
-            let __tulisp_internal_value = __tulisp_internal_value.cdr()?;
+            let __tulisp_internal_value = __tulisp_internal_value.clone();
 
             #arg_extract_stmts
             #call_and_ret
