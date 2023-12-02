@@ -201,7 +201,7 @@ fn process_arg(
                                 stringify!(#fn_name),
                                 stringify!(#arg_name)
                             )
-                        ).with_span(x.span()))
+                        ))
                     } else {
                         Ok(Some(x.iter()))
                     }
@@ -218,7 +218,7 @@ fn process_arg(
                                 stringify!(#fn_name),
                                 stringify!(#arg_name)
                             )
-                        ).with_span(x.span()))
+                        ))
                     } else {
                         Ok(x.iter())
                     }
